@@ -55,3 +55,43 @@ def tween(percentage, obj = None, attrs = None, selection = True):
         currentValue = previousValue + weightedDifference
 
         cmds.setKeyframe(attrFull, time = currentTime, value = currentValue)
+
+class TweenWindow(object):
+    
+    windowName = "TweenerWindow"
+    
+    def show(self):
+
+        if cmds.window(self.windowName, query = True, exists = True):
+            cmds.deleteUI(self.windowName)
+
+        cmds.window(self.windowName)
+
+        #put ui
+        self.buildUI()
+
+        cmds.showWindow()
+
+
+    def buildUI(self):
+
+        column = cmds.columnLayout()
+
+        cmds.text(label = "Use this slider to set the tween amount")
+
+        row = cmds.rowLayout(numberOfColumns = 2)
+
+        self.slider = cmds.floatSlider(min = 0, max = 100, value = 50, step = 1, changeCommand = tween)
+
+        cmds.button(label = "Reset", command = self.reset)
+
+        cmds.setParent(column)
+        cmds.button(label = "Close", command = self.close)
+
+    #don't need another argument, but needed for maya requirement, dump variable into argus
+    def reset(self, *args):
+        #whenever edit works, value changes
+        cmds.floatSlider(self.slider, edit = True, value = 50)
+
+    def close(self, *args):
+        cmds.deleteUI(self.windowName)
