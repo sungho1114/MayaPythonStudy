@@ -86,10 +86,6 @@ class ControllerLibraryUI(QtWidgets.QDialog):
         closeBtn.clicked.connect(self.close)        # connect to close (QDialogue)
         btnLayout.addWidget(closeBtn)
 
-        newBtn = QtWidgets.QPushButton('New')
-        newBtn.clicked.connect(self.openwindow)
-        btnLayout.addWidget(newBtn)
-
 
 
     def populate(self):
