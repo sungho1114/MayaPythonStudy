@@ -19,7 +19,7 @@ class BuildingGenerator(QtWidgets.QWidget):
         parent = QtWidgets.QDialog(parent=getMayaMainWindow())
         parent.setObjectName('Building Generator')
         parent.setWindowTitle('Building Generator')
-        parent.resize(250, 300)
+        parent.resize(260, 300)
         parent.show()
 
         super(BuildingGenerator, self).__init__(parent=parent)
@@ -48,7 +48,7 @@ class BuildingGenerator(QtWidgets.QWidget):
         layout.addWidget(line, 1, 0, 1, 3)
 
         # Label - Number of Walls
-        numOfWallsLabel = QtWidgets.QLabel("Number of Walls")
+        numOfWallsLabel = QtWidgets.QLabel("Set Number of Walls")
         layout.addWidget(numOfWallsLabel, 2, 0, 1, 2)
 
         # LENGTH WIDGETS
@@ -57,14 +57,20 @@ class BuildingGenerator(QtWidgets.QWidget):
         layout.addWidget(lengthLabel, 3, 0)
 
         # NameField - Length
-        lengthNameField = QtWidgets.QLineEdit()
-        layout.addWidget(lengthNameField, 3, 1)
+        self.lengthNameField = QtWidgets.QSpinBox()
+        self.lengthNameField.setValue(1)
+        self.lengthNameField.valueChanged.connect(lambda val: self.lengthSlider.setValue(val))
+        layout.addWidget(self.lengthNameField, 3, 1)
 
         # Slider - Length
-        lengthSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
-        lengthSlider.setMinimum(1)
-        lengthSlider.setMaximum(100)
-        layout.addWidget(lengthSlider, 3, 2)
+        self.lengthSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
+        self.lengthSlider.setMinimum(1)
+        self.lengthSlider.setMaximum(100)
+        self.lengthSlider.setValue(1)
+        self.lengthSlider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.lengthSlider.setTickInterval(10)
+        self.lengthSlider.valueChanged.connect(lambda val: self.lengthNameField.setValue(val))
+        layout.addWidget(self.lengthSlider, 3, 2)
 
         # WIDTH WIDGETS
         # Label - Width
@@ -72,14 +78,20 @@ class BuildingGenerator(QtWidgets.QWidget):
         layout.addWidget(widthLabel, 4, 0)
 
         # NameField - Width
-        widthNameField = QtWidgets.QLineEdit()
-        layout.addWidget(widthNameField, 4, 1)
+        self.widthNameField = QtWidgets.QSpinBox()
+        self.widthNameField.setValue(1)
+        self.widthNameField.valueChanged.connect(lambda val: self.widthSlider.setValue(val))
+        layout.addWidget(self.widthNameField, 4, 1)
 
         # Slider - Width
-        widthSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
-        widthSlider.setMinimum(1)
-        widthSlider.setMaximum(100)
-        layout.addWidget(widthSlider, 4, 2)
+        self.widthSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
+        self.widthSlider.setMinimum(1)
+        self.widthSlider.setMaximum(100)
+        self.widthSlider.setValue(1)
+        self.widthSlider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.widthSlider.setTickInterval(10)
+        self.widthSlider.valueChanged.connect(lambda val: self.widthNameField.setValue(val))
+        layout.addWidget(self.widthSlider, 4, 2)
 
         # FLOORS WIDGETS
         # Label - Floors
@@ -87,14 +99,20 @@ class BuildingGenerator(QtWidgets.QWidget):
         layout.addWidget(floorLabel, 5, 0)
 
         # NameField - Floors
-        floorNameField = QtWidgets.QLineEdit()
-        layout.addWidget(floorNameField, 5, 1)
+        self.floorNameField = QtWidgets.QSpinBox()
+        self.floorNameField.setValue(1)
+        self.floorNameField.valueChanged.connect(lambda val: self.floorSlider.setValue(val))
+        layout.addWidget(self.floorNameField, 5, 1)
 
         # Slider - Floors
-        floorSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
-        floorSlider.setMinimum(1)
-        floorSlider.setMaximum(100)
-        layout.addWidget(floorSlider, 5, 2)
+        self.floorSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
+        self.floorSlider.setMinimum(1)
+        self.floorSlider.setMaximum(100)
+        self.floorSlider.setValue(1)
+        self.floorSlider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.floorSlider.setTickInterval(10)
+        self.floorSlider.valueChanged.connect(lambda val: self.floorNameField.setValue(val))
+        layout.addWidget(self.floorSlider, 5, 2)
 
         # Line Break
         line = QtWidgets.QFrame()
@@ -103,7 +121,7 @@ class BuildingGenerator(QtWidgets.QWidget):
         layout.addWidget(line, 6, 0, 1, 3)
 
         # Label - Gap
-        gapLabel = QtWidgets.QLabel("Gap")
+        gapLabel = QtWidgets.QLabel("Adjust Gap")
         layout.addWidget(gapLabel, 7, 0, 1, 2)
 
         # LENGTH GAP WIDGETS
@@ -112,14 +130,22 @@ class BuildingGenerator(QtWidgets.QWidget):
         layout.addWidget(lengthGapLabel, 8, 0)
 
         # NameField - Length Gap
-        lengthGapNameField = QtWidgets.QLineEdit()
-        layout.addWidget(lengthGapNameField, 8, 1)
+        self.lengthGapNameField = QtWidgets.QDoubleSpinBox()
+        self.lengthGapNameField.setMinimum(-100)
+        self.lengthGapNameField.setMaximum(100)
+        self.lengthGapNameField.setValue(0)
+        self.lengthGapNameField.valueChanged.connect(lambda val: self.lengthGapSlider.setValue(val))
+        layout.addWidget(self.lengthGapNameField, 8, 1)
 
         # Slider - Length Gap
-        lengthGapSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
-        lengthGapSlider.setMinimum(1)
-        lengthGapSlider.setMaximum(100)
-        layout.addWidget(lengthGapSlider, 8, 2)
+        self.lengthGapSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
+        self.lengthGapSlider.setMinimum(-100)
+        self.lengthGapSlider.setMaximum(100)
+        self.lengthGapSlider.setValue(0)
+        self.lengthGapSlider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.lengthGapSlider.setTickInterval(10)
+        self.lengthGapSlider.valueChanged.connect(lambda val: self.lengthGapNameField.setValue(val))
+        layout.addWidget(self.lengthGapSlider, 8, 2)
 
         # HEIGHT GAP WIDGETS
         # Label - Height
@@ -127,14 +153,22 @@ class BuildingGenerator(QtWidgets.QWidget):
         layout.addWidget(heightGapLabel, 9, 0)
 
         # NameField - Floors
-        heightGapNameField = QtWidgets.QLineEdit()
-        layout.addWidget(heightGapNameField, 9, 1)
+        self.heightGapNameField = QtWidgets.QDoubleSpinBox()
+        self.heightGapNameField.setMinimum(-100)
+        self.heightGapNameField.setMaximum(100)
+        self.heightGapNameField.setValue(0)
+        self.heightGapNameField.valueChanged.connect(lambda val: self.heightGapSlider.setValue(val))
+        layout.addWidget(self.heightGapNameField, 9, 1)
 
         # Slider - Floors
-        heightGapSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
-        heightGapSlider.setMinimum(1)
-        heightGapSlider.setMaximum(100)
-        layout.addWidget(heightGapSlider, 9, 2)
+        self.heightGapSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
+        self.heightGapSlider.setMinimum(-100)
+        self.heightGapSlider.setMaximum(100)
+        self.heightGapSlider.setValue(0)
+        self.heightGapSlider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.heightGapSlider.setTickInterval(10)
+        self.heightGapSlider.valueChanged.connect(lambda val: self.heightGapNameField.setValue(val))
+        layout.addWidget(self.heightGapSlider, 9, 2)
 
         # Line Break
         line = QtWidgets.QFrame()
@@ -142,10 +176,15 @@ class BuildingGenerator(QtWidgets.QWidget):
         line.setFrameShadow(QtWidgets.QFrame.Sunken)
         layout.addWidget(line, 10, 0, 1, 3)
 
-        # import button
-        createBtn = QtWidgets.QPushButton('Create')
-        createBtn.clicked.connect(self.createBuilding)
-        layout.addWidget(createBtn, 11, 0, 1, 3)
+        # reverse button
+        self.reverseBtn = QtWidgets.QPushButton('Undo')
+        self.reverseBtn.clicked.connect(self.reverseBuilding)
+        layout.addWidget(self.reverseBtn, 11, 0)
+
+        # create button
+        self.createBtn = QtWidgets.QPushButton('Create')
+        self.createBtn.clicked.connect(self.createBuilding)
+        layout.addWidget(self.createBtn, 11, 1, 1, 2)
 
     def createBuilding(self):
         # Raise error if not selected
@@ -157,28 +196,31 @@ class BuildingGenerator(QtWidgets.QWidget):
         selectedMesh = selectedMeshes.pop(0)
 
         # Variable - Mesh Scale
-        bbox = cmds.exactWorldBoundingBox(selectedMesh)
-        cmds.makeIdentity(selectedMesh, apply=True, t=True, r=True, s=True, n=1)
+        cmds.makeIdentity(selectedMesh, apply=True, t=1, r=1, s=1, n=0)
+        bbox = cmds.exactWorldBoundingBox(selectedMesh, calculateExactly=True, ignoreInvisible=True)
         bboxTranslate = cmds.xform(selectedMesh, q=1, ws=1, rp=1)
 
         bboxScale = [abs(abs(bbox[3]) - abs(bbox[0])), abs(abs(bbox[4]) - abs(bbox[1])),
                      abs(abs(bbox[5]) - abs(bbox[2]))]
 
         # Variables - floors, length, width
-        floorCount = 4
-        lengthCount = 2
-        widthCount = 3
+        floorCount = self.floorNameField.value()
+        lengthCount = self.lengthNameField.value()
+        widthCount = self.widthNameField.value()
+        lengthGap = self.lengthGapNameField.value()
+        heightGap = self.heightGapNameField.value()
+
         instance = True
-        buildingMeshes = []
+        self.buildingMeshes = []
 
         # Populate Wall Width
         for i in range(2):
             scale = -1 if i == 0 else 1
             for y in range(widthCount):
                 for z in range(floorCount):
-                    buildingMeshes.append(cmds.duplicate(name=selectedMesh, instanceLeaf=instance))
+                    self.buildingMeshes.append(cmds.duplicate(name=selectedMesh))
                     cmds.xform(absolute=True,
-                               translation=[i * lengthCount * bboxScale[1], y * -bboxScale[1] - 5.5, z * bboxScale[2]],
+                               translation=[(i * lengthCount * bboxScale[1]), y * -bboxScale[1] - 5.5 - (lengthGap * (y - 1)), z * bboxScale[2] + heightGap * z],
                                scale=[scale, 1, 1])
 
         # Populate Wall Length
@@ -186,16 +228,16 @@ class BuildingGenerator(QtWidgets.QWidget):
             scale = -1 if i == 1 else 1
             for x in range(lengthCount):
                 for z in range(floorCount):
-                    buildingMeshes.append(cmds.duplicate(name=selectedMesh, instanceLeaf=instance))
+                    self.buildingMeshes.append(cmds.duplicate(name=selectedMesh))
                     cmds.xform(absolute=True,
-                               translation=[x * bboxScale[1], i * widthCount * -bboxScale[1] - 5.5, z * bboxScale[2]],
+                               translation=[(x * bboxScale[1]) + (lengthGap * (x - 1)), i * widthCount * -bboxScale[1] - 5.5, z * bboxScale[2] + heightGap * z],
                                rotation=[0, 0, 90],
                                scale=[scale, 1, 1])
 
         # Populate Floors
         cmds.polyPlane(subdivisionsX=1, subdivisionsY=1)
         for i in range(floorCount + 1):
-            cmds.duplicate(instanceLeaf=instance)
+            self.buildingMeshes.append(cmds.duplicate())
             cmds.xform(absolute=True,
                        translation=[bboxTranslate[0] + (lengthCount * bboxScale[1]) / 2,
                                     bboxTranslate[1] + -(widthCount * bboxScale[1]) / 2,
@@ -203,12 +245,14 @@ class BuildingGenerator(QtWidgets.QWidget):
                        rotation=[90, 0, 0],
                        scale=[lengthCount * bboxScale[1], 1, widthCount * bboxScale[1]])
 
-        self.buildingMeshes = buildingMeshes
+        # move original mesh to the side
+        cmds.xform(selectedMesh,
+                   absolute=True,
+                   translation=[(x * bboxScale[1]), 2 * bboxScale[1],
+                                0])
 
-        # Delete mesh
-        cmds.delete(selectedMesh)
 
-        var = lambda val: cmds.delete(self.buildingMeshes)
 
-    # def deleteWalls(self, *args):
-    #    cmds.delete(self.buildingMeshes)
+    def reverseBuilding(self):
+        for i in self.buildingMeshes:
+            cmds.delete(i)
