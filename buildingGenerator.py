@@ -19,7 +19,7 @@ class BuildingGenerator(QtWidgets.QWidget):
         parent = QtWidgets.QDialog(parent=getMayaMainWindow())
         parent.setObjectName('Building Generator')
         parent.setWindowTitle('Building Generator')
-        parent.resize(260, 300)
+        parent.resize(265, 300)
         parent.show()
 
         super(BuildingGenerator, self).__init__(parent=parent)
@@ -131,16 +131,16 @@ class BuildingGenerator(QtWidgets.QWidget):
 
         # NameField - Length Gap
         self.lengthGapNameField = QtWidgets.QDoubleSpinBox()
-        self.lengthGapNameField.setMinimum(-100)
-        self.lengthGapNameField.setMaximum(100)
+        self.lengthGapNameField.setMinimum(-1000)
+        self.lengthGapNameField.setMaximum(1000)
         self.lengthGapNameField.setValue(0)
         self.lengthGapNameField.valueChanged.connect(lambda val: self.lengthGapSlider.setValue(val))
         layout.addWidget(self.lengthGapNameField, 8, 1)
 
         # Slider - Length Gap
         self.lengthGapSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
-        self.lengthGapSlider.setMinimum(-100)
-        self.lengthGapSlider.setMaximum(100)
+        self.lengthGapSlider.setMinimum(-1000)
+        self.lengthGapSlider.setMaximum(1000)
         self.lengthGapSlider.setValue(0)
         self.lengthGapSlider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.lengthGapSlider.setTickInterval(10)
@@ -154,16 +154,16 @@ class BuildingGenerator(QtWidgets.QWidget):
 
         # NameField - Floors
         self.heightGapNameField = QtWidgets.QDoubleSpinBox()
-        self.heightGapNameField.setMinimum(-100)
-        self.heightGapNameField.setMaximum(100)
+        self.heightGapNameField.setMinimum(-1000)
+        self.heightGapNameField.setMaximum(1000)
         self.heightGapNameField.setValue(0)
         self.heightGapNameField.valueChanged.connect(lambda val: self.heightGapSlider.setValue(val))
         layout.addWidget(self.heightGapNameField, 9, 1)
 
         # Slider - Floors
         self.heightGapSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)  # left to right slider
-        self.heightGapSlider.setMinimum(-100)
-        self.heightGapSlider.setMaximum(100)
+        self.heightGapSlider.setMinimum(-1000)
+        self.heightGapSlider.setMaximum(1000)
         self.heightGapSlider.setValue(0)
         self.heightGapSlider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.heightGapSlider.setTickInterval(10)
@@ -193,12 +193,12 @@ class BuildingGenerator(QtWidgets.QWidget):
 
         # get Mesh selection
         selectedMeshes = cmds.ls(selection=True)
-        selectedMesh = selectedMeshes.pop(0)
+        self.selectedMesh = selectedMeshes.pop(0)
 
         # Variable - Mesh Scale
-        cmds.makeIdentity(selectedMesh, apply=True, t=1, r=1, s=1, n=0)
-        bbox = cmds.exactWorldBoundingBox(selectedMesh, calculateExactly=True, ignoreInvisible=True)
-        bboxTranslate = cmds.xform(selectedMesh, q=1, ws=1, rp=1)
+        cmds.makeIdentity(self.selectedMesh, apply=True, t=1, r=1, s=1, n=0)
+        bbox = cmds.exactWorldBoundingBox(self.selectedMesh, calculateExactly=True, ignoreInvisible=True)
+        bboxTranslate = cmds.xform(self.selectedMesh, q=1, ws=1, rp=1)
 
         bboxScale = [abs(abs(bbox[3]) - abs(bbox[0])), abs(abs(bbox[4]) - abs(bbox[1])),
                      abs(abs(bbox[5]) - abs(bbox[2]))]
@@ -218,9 +218,11 @@ class BuildingGenerator(QtWidgets.QWidget):
             scale = -1 if i == 0 else 1
             for y in range(widthCount):
                 for z in range(floorCount):
-                    self.buildingMeshes.append(cmds.duplicate(name=selectedMesh))
+                    self.buildingMeshes.append(cmds.duplicate(name=self.selectedMesh))
                     cmds.xform(absolute=True,
-                               translation=[(i * lengthCount * bboxScale[1]), y * -bboxScale[1] - 5.5 - (lengthGap * (y - 1)), z * bboxScale[2] + heightGap * z],
+                               translation=[(i * lengthCount * bboxScale[1]) + (i * lengthGap * lengthCount),
+                                            (y * -bboxScale[1]) - (lengthGap * (y - 1)) - (lengthGap + lengthGap / 2),
+                                            z * bboxScale[2] + heightGap * z],
                                scale=[scale, 1, 1])
 
         # Populate Wall Length
@@ -228,9 +230,11 @@ class BuildingGenerator(QtWidgets.QWidget):
             scale = -1 if i == 1 else 1
             for x in range(lengthCount):
                 for z in range(floorCount):
-                    self.buildingMeshes.append(cmds.duplicate(name=selectedMesh))
+                    self.buildingMeshes.append(cmds.duplicate(name=self.selectedMesh))
                     cmds.xform(absolute=True,
-                               translation=[(x * bboxScale[1]) + (lengthGap * (x - 1)), i * widthCount * -bboxScale[1] - 5.5, z * bboxScale[2] + heightGap * z],
+                               translation=[(x * bboxScale[1]) + (lengthGap * (x - 1)) + (lengthGap + lengthGap / 2),
+                                            (i * widthCount * -bboxScale[1]) - (i * lengthGap * widthCount),
+                                            z * bboxScale[2] + heightGap * z],
                                rotation=[0, 0, 90],
                                scale=[scale, 1, 1])
 
@@ -239,20 +243,26 @@ class BuildingGenerator(QtWidgets.QWidget):
         for i in range(floorCount + 1):
             self.buildingMeshes.append(cmds.duplicate())
             cmds.xform(absolute=True,
-                       translation=[bboxTranslate[0] + (lengthCount * bboxScale[1]) / 2,
-                                    bboxTranslate[1] + -(widthCount * bboxScale[1]) / 2,
-                                    bboxTranslate[2] + i * bboxScale[2]],
+                       translation=[bboxTranslate[0] + (lengthCount * bboxScale[1]) / 2 + (lengthGap * lengthCount) / 2,
+                                    bboxTranslate[1] - (widthCount * bboxScale[1]) / 2 - (lengthGap * widthCount) / 2,
+                                    bboxTranslate[2] + i * bboxScale[2] + heightGap * i],
                        rotation=[90, 0, 0],
-                       scale=[lengthCount * bboxScale[1], 1, widthCount * bboxScale[1]])
+                       scale=[(lengthCount * bboxScale[1] + (lengthGap * lengthCount)), 1,
+                              (widthCount * bboxScale[1]) + (lengthGap * widthCount)])
+            print(bboxTranslate[2] + i * bboxScale[2] + heightGap * i)
 
         # move original mesh to the side
-        cmds.xform(selectedMesh,
+        cmds.xform(self.selectedMesh,
                    absolute=True,
-                   translation=[(x * bboxScale[1]), 2 * bboxScale[1],
+                   translation=[0, 2 * bboxScale[1],
                                 0])
 
-
-
     def reverseBuilding(self):
+
         for i in self.buildingMeshes:
             cmds.delete(i)
+
+        self.buildingMeshes = []
+
+        cmds.move(0, 0, 0, self.selectedMesh)
+        cmds.select(self.selectedMesh)
